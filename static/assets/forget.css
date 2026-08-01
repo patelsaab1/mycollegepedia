@@ -1,0 +1,94 @@
+.mainDiv {
+    position: absolute;
+    max-width: 100%;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 3px 9px #e4e2e2;
+  
+
+}
+
+.mainDiv .cardStyle {
+    width: 500px;
+    border-color: white;
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    margin: 30px 0;
+   
+}
+
+.mainDiv #signupLogo {
+    max-height: 120px;
+    max-width: 220px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+#signupLogo {
+    max-height: 120px;
+    max-width: 220px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+.brandTagline {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #555;
+    margin: 8px 0 0;
+    text-transform: uppercase;
+}
+
+
+.mainDiv .formTitle {
+    font-weight: 600;
+    margin-top: 20px;
+    color: #2F2D3B;
+    text-align: center;
+}
+
+.mainDiv .inputLabel {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 6px;
+    margin-top: 24px;
+}
+
+.mainDiv .inputDiv {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+
+.buttonWrapper {
+    margin-top: 40px;
+}
+
+.submitButton {
+    width: 70%;
+    height: 40px;
+    margin: auto;
+    padding:10px 24px;
+    display: block;
+    color: #fff;
+    background-color: #20e277;
+    border-color: #20e277;
+    border-radius:50px;
+    border:none;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.035);
+    font-size: 14px;
+    cursor: pointer;
+}

@@ -1,0 +1,14 @@
+Profile Registration Successful
+
+Hello {{ user }},
+
+Thank you for registering with Admission Bazaar. Your profile has been successfully created and is now under verification.
+
+We are reviewing your details and will notify you by SMS once your profile has been verified. This process typically takes a few business days.
+
+If you have any questions in the meantime, please do not hesitate to contact our support team.
+
+Thank you for your patience.
+
+Best regards,
+Admission Bazaar

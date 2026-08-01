@@ -1,0 +1,14 @@
+Admission Bazaar Account Verification OTP
+
+Hello {{ user }},
+
+Thank you for choosing Admission Bazaar. To complete your registration process as a counsellor, please use the following One-Time Password (OTP):
+
+Your OTP: {{ otp }}
+
+This OTP is only valid for a single use and will expire in 5 minute. Please do not share this OTP with anyone. If you haven't initiated this request, please ignore this message.
+
+Welcome to Admission Bazaar! We're excited to have you on board.
+
+Best regards,
+Admission Bazaar

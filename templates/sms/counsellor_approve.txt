@@ -1,0 +1,12 @@
+Dear {{ user }},
+
+Congratulations! Your registration as a counselor on Admission Bazaar has been successfully approved.
+
+You can now log in to your account and start providing your valuable services to our community.
+
+Thank you for choosing to be a part of Admission Bazaar. We are excited to have you on board.
+
+If you have any questions or need further assistance, please do not hesitate to contact our support team.
+
+Best regards,
+Admission Bazaar
