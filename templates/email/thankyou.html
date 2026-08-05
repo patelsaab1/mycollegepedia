@@ -9,13 +9,14 @@
 <body>
     <h1>Hello {{ name }},</h1>
     <p>Thank you for reaching out to us. We have received your message and are happy to assist you. One of our team members will review your inquiry and get back to you within 24-48 hours.</p>
-    <p>If your inquiry is urgent, please use the mobile number listed on our website to talk to a customer service representative immediately. We are committed to providing you with the best possible service.</p>
+    <p>If your inquiry is urgent, please call us at <strong>{{ support_phone }}</strong> or email <a href="mailto:{{ support_email }}">{{ support_email }}</a>.</p>
     <p>Here’s a summary of your inquiry for your records:</p>
     <p><strong>Subject:</strong> {{ subject }}</p>
     <p><strong>Message:</strong><br>{{ message }}</p>
     <p>Thank you for your patience and understanding.</p>
     <p>Best regards,<br>
-    <a href="https://mycollegepedia.com/" target="_blank">Admission Bazaar</a> Team<br>
-    <span style="font-size:12px;color:#666;">DREAM • DISCOVER • SUCCEED</span></p>
+    <a href="mailto:{{ support_email }}">Admission Bazaar</a> Team<br>
+    <span style="font-size:12px;color:#666;">DREAM • DISCOVER • SUCCEED</span><br>
+    <span style="font-size:12px;color:#666;">{{ support_phone }} | {{ support_email }}</span></p>
 </body>
 </html>

@@ -7,6 +7,7 @@ from .models import *
 from .serializers import *
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
@@ -99,7 +100,7 @@ class CounsellorApplicationCreateView(CreateAPIView):
             'name': application.student.name,
             'company_name': application.counsellor.company_name
         })
-        sender_email = 'Admission Bazaar <support@mycollegepedia.com>'
+        sender_email = settings.DEFAULT_FROM_EMAIL
         recipient_email = email
 
         try:
@@ -107,7 +108,7 @@ class CounsellorApplicationCreateView(CreateAPIView):
                 subject,
                 message_html,
                 sender_email,
-                [recipient_email,'mycollegepedia@gmail.com']
+                [recipient_email, settings.SUPPORT_CC_EMAIL]
             )
             email.content_subtype = 'html' 
             email.send()
@@ -280,7 +281,7 @@ class LeadsViewSet(viewsets.ModelViewSet):
             'company_name': application.counsellor.company_name,
             'status': application.status  # Assuming there is a status field
         })
-        sender_email = 'Admission Bazaar <support@mycollegepedia.com>'
+        sender_email = settings.DEFAULT_FROM_EMAIL
         recipient_email = email
 
         try:
@@ -288,7 +289,7 @@ class LeadsViewSet(viewsets.ModelViewSet):
                 subject,
                 message_html,
                 sender_email,
-                [recipient_email,'mycollegepedia@gmail.com']
+                [recipient_email, settings.SUPPORT_CC_EMAIL]
             )
             email.content_subtype = 'html'  # Indicating the email content is in HTML format
             email.send()

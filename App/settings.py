@@ -80,43 +80,14 @@ WSGI_APPLICATION = 'App.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mycollegepedia_db',
-        'USER': 'mycollegepedia_admin',
-        'PASSWORD': 'StrongPassword123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.mysql'),
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='3306'),
     }
 }
-
-
-# DATABASES = {
-#     'default':{
-#         'ENGINE':config('ENGINE'),
-#         'NAME':config('NAME'),
-#         'USER':'root',
-#         'PASSWORD':config('PASSWORD'),
-#         'HOST':config('HOST'),
-#         'PORT':config('PORT'),
-#     }
-# }
-
-# DATABASES = {
-#     'default':{
-#         'ENGINE':'django.db.backends.mysql',
-#         'NAME':'mycollegepedia_database',
-#         'USER':'mycollegepedia_admin',
-#         'PASSWORD':'r2BTi{&+#9wT',
-#         'HOST':'localhost',
-#         'PORT':'3306',
-#     }
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -239,7 +210,11 @@ EMAIL_PORT = config('EMAIL_PORT')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'Admission Bazaar <support@mycollegepedia.com>'
+
+SUPPORT_EMAIL = config('SUPPORT_EMAIL', default='Admissionsbazaar@gmail.com')
+SUPPORT_PHONE = config('SUPPORT_PHONE', default='9479469454')
+DEFAULT_FROM_EMAIL = f'Admission Bazaar <{SUPPORT_EMAIL}>'
+SUPPORT_CC_EMAIL = config('SUPPORT_CC_EMAIL', default=SUPPORT_EMAIL)
 
 TEMPLATES_BASE_URL = config('TEMPLATES_BASE_URL')
 

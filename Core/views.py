@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.http import Http404
+from django.conf import settings
 from .models import SiteConfig, About, Slider, Contact,PrivacyPolicy,TermsAndCondition,Testimonial,Feedback,Experience
 from .serializers import SiteConfigSerializer, AboutSerializer, SliderSerializer, ContactSerializer,PrivacyPolicySerializer,TermsAndConditionSerializer,TestimonialSerializer,FeedbackSerializer,ExperienceSerializer
 from django.core.mail import EmailMessage
@@ -99,9 +100,15 @@ class ContactCreateView(generics.CreateAPIView):
         instance = serializer.save()
 
         subject = 'Admission Bazaar | Thank You for Contacting Us'
-        message_html = render_to_string('email/thankyou.html', {'name': instance.name,'subject':instance.subject,'message':instance.message})
+        message_html = render_to_string('email/thankyou.html', {
+            'name': instance.name,
+            'subject': instance.subject,
+            'message': instance.message,
+            'support_email': settings.SUPPORT_EMAIL,
+            'support_phone': settings.SUPPORT_PHONE,
+        })
 
-        sender_email = 'Admission Bazaar <support@mycollegepedia.com>'
+        sender_email = settings.DEFAULT_FROM_EMAIL
         recipient_email = instance.email
 
         try:
@@ -109,7 +116,7 @@ class ContactCreateView(generics.CreateAPIView):
                 subject,
                 message_html,
                 sender_email,
-                [recipient_email,'mycollegepedia@gmail.com'],
+                [recipient_email, settings.SUPPORT_CC_EMAIL],
             )
             email.content_subtype = 'html'
             email.send()

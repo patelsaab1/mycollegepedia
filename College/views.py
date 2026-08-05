@@ -15,6 +15,7 @@ from Exam.models import Exam
 from General.permissions import IsCollege
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 from django.db import models
@@ -115,7 +116,7 @@ class CollegeApplicationCreateView(generics.CreateAPIView):
             'name': application.student.name,
             'college_name': application.college.name
         })
-        sender_email = 'Admission Bazaar <support@mycollegepedia.com>'
+        sender_email = settings.DEFAULT_FROM_EMAIL
         recipient_email = email
 
         try:
@@ -123,7 +124,7 @@ class CollegeApplicationCreateView(generics.CreateAPIView):
                 subject,
                 message_html,
                 sender_email,
-                [recipient_email,'mycollegepedia@gmail.com']
+                [recipient_email, settings.SUPPORT_CC_EMAIL]
             )
             email.content_subtype = 'html' 
             email.send()
@@ -283,7 +284,7 @@ class CollegeAppliedViewSet(viewsets.ModelViewSet):
             'college_name': application.college.name,
             'status': application.status  # Assuming there is a status field
         })
-        sender_email = 'Admission Bazaar <support@mycollegepedia.com>'
+        sender_email = settings.DEFAULT_FROM_EMAIL
         recipient_email = email
 
         try:
@@ -291,7 +292,7 @@ class CollegeAppliedViewSet(viewsets.ModelViewSet):
                 subject,
                 message_html,
                 sender_email,
-                [recipient_email,'mycollegepedia@gmail.com']
+                [recipient_email, settings.SUPPORT_CC_EMAIL]
             )
             email.content_subtype = 'html'  # Indicating the email content is in HTML format
             email.send()
