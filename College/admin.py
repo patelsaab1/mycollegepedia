@@ -33,6 +33,10 @@ class CollegeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
             'fields': ('college_user', 'name', 'affiliation', 'rank', 'rating', 'logo', 'image', 'college_type',
                        'established_year', 'organization_type',
                        'course_category', 'course_subcategory', 'overview','views'),
+            'description': (
+                'Import: college_user email required. Naya email ho to user_name + user_mobile bhi do. '
+                'Template: python manage.py export_bulk_templates'
+            ),
         }),
         ('Admission Process', {
             'fields': ('admission_process',),
