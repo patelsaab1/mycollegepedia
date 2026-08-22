@@ -5,6 +5,7 @@ from django.utils.html import strip_tags
 from django import forms
 from import_export.admin import ImportExportModelAdmin
 from .resources import *
+from General.admin_bulk import BulkTemplateDownloadMixin
 
 # Register your models here.
 class FAQInline(admin.StackedInline):
@@ -24,19 +25,17 @@ class CollegeGalleryInline(admin.StackedInline):
     extra = 1
 
 @admin.register(College)
-class CollegeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class CollegeAdmin(BulkTemplateDownloadMixin, ImportExportModelAdmin, admin.ModelAdmin):
     inlines = [CollegeGalleryInline,CollegeVideoInline,CourseFeeInline,FAQInline]
     resource_classes = [CollegeResource]
+    bulk_template_key = "college"
+    change_list_template = "admin/bulk_import_change_list.html"
     
     fieldsets = (
         ('Basic Info', {
             'fields': ('college_user', 'name', 'affiliation', 'rank', 'rating', 'logo', 'image', 'college_type',
                        'established_year', 'organization_type',
                        'course_category', 'course_subcategory', 'overview','views'),
-            'description': (
-                'Import: college_user email required. Naya email ho to user_name + user_mobile bhi do. '
-                'Template: python manage.py export_bulk_templates'
-            ),
         }),
         ('Admission Process', {
             'fields': ('admission_process',),

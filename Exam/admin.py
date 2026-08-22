@@ -4,19 +4,18 @@ from import_export.admin import ImportExportModelAdmin
 
 from Exam.models import Exam, UpcomingExam
 from Exam.resources import ExamResource, UpcomingExamResource
+from General.admin_bulk import BulkTemplateDownloadMixin
 
 
 @admin.register(Exam)
-class ExamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class ExamAdmin(BulkTemplateDownloadMixin, ImportExportModelAdmin, admin.ModelAdmin):
     resource_classes = [ExamResource]
+    bulk_template_key = "exam"
+    change_list_template = "admin/bulk_import_change_list.html"
+
     fieldsets = (
         ('Basic Info', {
             'fields': ('course_category', 'title', 'image', 'full_form',),
-            'description': (
-                'Bulk upload: Export → template headers rakho → Import. '
-                'Columns: title, full_form, course_category, description, meta_title, slug. '
-                'course_category exact name (Medical, Engineering…).'
-            ),
         }),
         ('Description', {
             'fields': ('description',),
@@ -31,30 +30,32 @@ class ExamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
     def _image(self, obj):
         if obj.image:
-            return format_html('<img src="{}" style="max-width:60px; max-height:60px"/>'.format(obj.image.url))
+            return format_html(
+                '<img src="{}" style="max-width:60px; max-height:60px"/>',
+                obj.image.url,
+            )
         return 'No image'
 
     list_display = ('title', '_image', 'course_category', 'full_form', 'created_at', 'updated_at',)
-    list_filter = ('title', 'full_form', 'course_category')
+    list_filter = ('course_category',)
     ordering = ('-created_at',)
     readonly_fields = ('created_at', 'updated_at')
     search_fields = ('title', 'full_form',)
-    list_per_page = 10
+    list_per_page = 20
     jazzmin_section_order = ("Basic Info", "Description", "SEO", "Timestamp",)
 
 
 @admin.register(UpcomingExam)
-class UpcomingExamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class UpcomingExamAdmin(BulkTemplateDownloadMixin, ImportExportModelAdmin, admin.ModelAdmin):
     resource_classes = [UpcomingExamResource]
+    bulk_template_key = "upcoming_exam"
+    change_list_template = "admin/bulk_import_change_list.html"
+
     fieldsets = (
         ('Basic Info', {
             'fields': (
                 'exam', 'title', 'exam_mode', 'exam_start_date', 'exam_end_date',
                 'application_start_date', 'application_end_date', 'result', 'url',
-            ),
-            'description': (
-                'Bulk: pehle Exam import karo. Upcoming sheet me exam = Exam title (e.g. NEET UG). '
-                'Dates: YYYY-MM-DD. exam_mode: Online ya Offline.'
             ),
         }),
         ('Description', {
@@ -72,9 +73,9 @@ class UpcomingExamAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         'title', 'exam', 'exam_mode', 'exam_start_date', 'exam_end_date',
         'application_start_date', 'application_end_date', 'result',
     )
-    list_filter = ('exam_mode', 'exam_start_date', 'exam_end_date',)
+    list_filter = ('exam_mode', 'exam')
     ordering = ('-created_at',)
     readonly_fields = ('created_at', 'updated_at')
     search_fields = ('title', 'exam__title',)
-    list_per_page = 10
+    list_per_page = 20
     jazzmin_section_order = ("Basic Info", "Description", "SEO", "Timestamp",)

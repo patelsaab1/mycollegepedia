@@ -1,0 +1,9 @@
+{% extends "admin/import_export/change_list_import_export.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {% if bulk_template_button %}
+    <li>{{ bulk_template_button }}</li>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
