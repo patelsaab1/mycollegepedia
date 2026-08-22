@@ -44,7 +44,6 @@ class CollegeAdmin(admin.ModelAdmin):
     add_fieldsets = (
         ('Basic Info', {
             'fields': ('name', 'email', 'mobile', 'department', 'designation'),
-            'description': 'Har college ke liye pehle yahan College User banao. Phir College form me is user ko select karo.',
         }),
         ('Address', {
             'fields': ('country', 'state', 'city'),

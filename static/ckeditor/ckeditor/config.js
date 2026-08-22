@@ -4,7 +4,6 @@
  */
 
 CKEDITOR.editorConfig = function( config ) {
-	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
-	// config.uiColor = '#AADC6E';
+	// Hide "CKEditor version is not secure" admin banner
+	config.versionCheck = false;
 };

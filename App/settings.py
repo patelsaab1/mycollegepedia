@@ -397,6 +397,8 @@ X_FRAME_OPTIONS = config('X_FRAME_OPTIONS')
 # CKEDITOR
 CKEDITOR_CONFIGS = {
     'default': {
+        # Hide insecure-version banner (CKEditor 4.22 ships with django-ckeditor)
+        'versionCheck': False,
         'toolbar': 'Custom',
         'toolbar_Custom': [["Format", "Bold", "Italic", "Underline", "Strike", "SpellChecker",'Font', 'FontSize',],
                 ['NumberedList', 'BulletedList', "Indent", "Outdent", 'JustifyLeft', 'JustifyCenter',
