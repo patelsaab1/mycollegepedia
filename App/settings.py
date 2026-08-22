@@ -164,6 +164,10 @@ CORS_ALLOWED_ORIGINS = [
     "https://mycollegepedia.com",
     "https://www.mycollegepedia.com",
     "https://portal.mycollegepedia.com",
+    "https://admissionsbazaar.com",
+    "https://www.admissionsbazaar.com",
+    "https://api.admissionsbazaar.com",
+    "https://portal.admissionsbazaar.com",
 ]
 
 
