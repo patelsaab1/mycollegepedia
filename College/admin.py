@@ -33,6 +33,11 @@ class CollegeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
             'fields': ('college_user', 'name', 'affiliation', 'rank', 'rating', 'logo', 'image', 'college_type',
                        'established_year', 'organization_type',
                        'course_category', 'course_subcategory', 'overview','views'),
+            'description': (
+                'Pehle AUTHENTICATION → College Users me login account banao. '
+                'Phir yahan College User select karo. Har college ke liye alag College User zaroori hai. '
+                'Logo + College Image + Rank + Overview + City required hain.'
+            ),
         }),
         ('Admission Process', {
             'fields': ('admission_process',),

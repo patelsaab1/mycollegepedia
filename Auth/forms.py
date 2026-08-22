@@ -4,17 +4,9 @@ from django import forms
 from Auth.models import User, CollegeAdmin, CounsellorAdmin
 
 
-class ChangeCollegeAdminForm(forms.ModelForm):
-    class Meta:
-        model = CollegeAdmin
-        fields = ['profile', 'name', 'email', 'mobile', 'dob', 'gender', 'religion', 'category', 'department',
-                  'designation', 'country', 'state', 'city', 'current_address','permanent_address', 'zipcode', 'is_staff','groups']
-
-
-
 class CustomCollegeAdminForm(UserCreationForm):
     is_staff = forms.BooleanField(
-        label='College Status',
+        label='Staff status',
         initial=True,
         required=False,
         disabled=True,
@@ -23,11 +15,42 @@ class CustomCollegeAdminForm(UserCreationForm):
 
     class Meta:
         model = CollegeAdmin
-        fields = ['name','email','mobile','is_staff','groups']
+        fields = [
+            'name',
+            'email',
+            'mobile',
+            'department',
+            'designation',
+            'city',
+            'country',
+            'state',
+            'is_staff',
+            'groups',
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['is_staff'].initial = True
+        self.fields['department'].required = True
+        self.fields['designation'].required = True
+        self.fields['city'].required = True
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_staff = True
+        user.is_college = True
+        user.is_active = True
+        if commit:
+            user.save()
+            self.save_m2m()
+        return user
+
+
+class ChangeCollegeAdminForm(forms.ModelForm):
+    class Meta:
+        model = CollegeAdmin
+        fields = ['profile', 'name', 'email', 'mobile', 'dob', 'gender', 'religion', 'category', 'department',
+                  'designation', 'country', 'state', 'city', 'current_address','permanent_address', 'zipcode', 'is_staff','groups']
 
 
 class ChangeCounsellorAdminForm(forms.ModelForm):

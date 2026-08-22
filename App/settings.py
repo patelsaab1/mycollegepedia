@@ -349,7 +349,7 @@ JAZZMIN_SETTINGS = {
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-caret-right",
     "default_icon_children": "fas fa-caret-right",
-    "related_modal_active": True,
+    "related_modal_active": False,
 
     "custom_css": "assets/myadmin.css",
     "custom_js": None,

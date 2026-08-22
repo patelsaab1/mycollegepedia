@@ -41,6 +41,21 @@ class CollegeAdmin(admin.ModelAdmin):
     resource_class = CollegeAdmin
     change_form = ChangeCollegeAdminForm
     add_form = CustomCollegeAdminForm
+    add_fieldsets = (
+        ('Basic Info', {
+            'fields': ('name', 'email', 'mobile', 'department', 'designation'),
+            'description': 'Har college ke liye pehle yahan College User banao. Phir College form me is user ko select karo.',
+        }),
+        ('Address', {
+            'fields': ('country', 'state', 'city'),
+        }),
+        ('Password', {
+            'fields': ('password1', 'password2'),
+        }),
+        ('Permissions', {
+            'fields': ('is_staff', 'groups'),
+        }),
+    )
 
     def _profile(self, obj):
         return format_html('<img src="{}" style="max-width:150px; max-height:150px"/>'.format(obj.profile.url))
@@ -53,11 +68,26 @@ class CollegeAdmin(admin.ModelAdmin):
     
     list_filter = ('dob', 'country', 'state', 'gender',)
     ordering = ('-id',)
-    # search_fields = (
-    #     'name', 'email', 'mobile', 'country', 'state', 'city', 'zipcode', 'religion', 'category', 'department',
-    #     'designation',)
     list_per_page=10
     jazzmin_section_order = ("Basic Info", "User Credential", "Address", "Login Info",)
+
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
+        return (
+            ('Basic Info', {
+                'fields': (
+                    'profile', 'name', 'email', 'mobile', 'dob', 'gender', 'religion', 'category',
+                    'department', 'designation',
+                ),
+            }),
+            ('Address', {
+                'fields': ('country', 'state', 'city', 'current_address', 'permanent_address', 'zipcode'),
+            }),
+            ('Permissions', {
+                'fields': ('is_staff', 'groups'),
+            }),
+        )
 
     def get_form(self, request, obj=None, **kwargs):
         if not obj:
