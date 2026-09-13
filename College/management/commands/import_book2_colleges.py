@@ -209,7 +209,10 @@ class Command(BaseCommand):
                     if linked and not existing:
                         existing = linked
 
-                    if College.objects.filter(rank=rank).exclude(name=name).exists():
+                    rank_clash = College.objects.filter(rank=rank)
+                    if existing:
+                        rank_clash = rank_clash.exclude(pk=existing.pk)
+                    if rank_clash.exists():
                         new_rank = rank
                         while College.objects.filter(rank=new_rank).exists():
                             new_rank += 1
@@ -217,6 +220,7 @@ class Command(BaseCommand):
 
                     defaults = dict(
                         college_user=user,
+                        name=name,
                         affiliation=affiliation,
                         organization_type=org,
                         college_type=college_type,
