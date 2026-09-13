@@ -201,13 +201,33 @@ class Command(BaseCommand):
                     user = ensure_college_user(email, row=fake_row)
 
                     linked = College.objects.filter(college_user=user).first()
-                    existing = College.objects.filter(name=name).first()
-                    if linked and existing and linked.id != existing.id:
-                        raise ValueError(
-                            f"email already linked to other college '{linked.name}'"
-                        )
-                    if linked and not existing:
+                    existing_by_name = College.objects.filter(name__iexact=name).first()
+
+                    # Prefer the college already linked to this user (fixes blank-name re-imports)
+                    if linked:
+                        if existing_by_name and existing_by_name.id != linked.id:
+                            # Same Excel name used by another campus — keep unique
+                            base = name
+                            suffix = 2
+                            candidate = f"{base} ({suffix})"
+                            if city:
+                                candidate = f"{base} ({city})"
+                            while College.objects.filter(name__iexact=candidate).exclude(
+                                pk=linked.pk
+                            ).exists():
+                                suffix += 1
+                                candidate = f"{base} ({suffix})"
+                            self.stdout.write(
+                                self.style.WARNING(
+                                    f"Row {row_no}: name clash → '{candidate}'"
+                                )
+                            )
+                            name = candidate
+                            if meta_title == _clip(base, 200) or not meta_title:
+                                meta_title = _clip(name, 200)
                         existing = linked
+                    else:
+                        existing = existing_by_name
 
                     rank_clash = College.objects.filter(rank=rank)
                     if existing:
