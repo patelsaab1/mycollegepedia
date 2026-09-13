@@ -56,6 +56,16 @@ def _first_token(value):
     return text
 
 
+def _clip(value, max_len):
+    """Truncate string fields to DB CharField limits (MySQL strict mode)."""
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    return text[:max_len]
+
+
 def _map_org_type(college_type_cell: str) -> str:
     t = (college_type_cell or "").lower()
     if "gov" in t or "government" in t:
@@ -117,27 +127,37 @@ class Command(BaseCommand):
         if limit and limit > 0:
             rows = rows[:limit]
 
-        def process_all():
-            nonlocal created, updated, skipped, errors
-            for row_no, row in enumerate(rows, start=2):
-                if not row or not row[idx["name"]]:
-                    skipped += 1
-                    continue
-                try:
-                    name = str(row[idx["name"]]).strip()
+        # Per-row atomic: one bad row must not poison the whole batch
+        # (MySQL "atomic block broken" cascade after Data too long / etc.)
+        for row_no, row in enumerate(rows, start=2):
+            if not row or not row[idx["name"]]:
+                skipped += 1
+                continue
+            try:
+                with transaction.atomic():
+                    name = _clip(row[idx["name"]], 255) or ""
                     email = str(row[idx["college_user"]] or "").strip().lower()
                     rank = int(row[idx["rank"]])
                     year = int(float(row[idx["established_year"]]))
-                    city = str(row[idx["city"]] or "").strip()
+                    city = _clip(row[idx["city"]], 70) or ""
                     overview = str(row[idx["overview"]] or "").strip()
-                    affiliation = str(row[idx.get("affiliation", -1)] or "").strip() if "affiliation" in idx else ""
+                    affiliation = (
+                        _clip(row[idx["affiliation"]], 100) if "affiliation" in idx else None
+                    )
                     rating = row[idx["rating"]] if "rating" in idx else 4
-                    slug = str(row[idx["slug"]] or "").strip() if "slug" in idx else ""
-                    meta_title = str(row[idx["meta_title"]] or "").strip() if "meta_title" in idx else name
-                    website = str(row[idx["website"]] or "").strip() if "website" in idx else ""
-                    contact_email = _first_token(row[idx["email"]]) if "email" in idx else ""
+                    slug = _clip(row[idx["slug"]], 200) if "slug" in idx else None
+                    meta_title = (
+                        _clip(row[idx["meta_title"]], 200)
+                        if "meta_title" in idx
+                        else _clip(name, 200)
+                    )
+                    website = _clip(row[idx["website"]], 200) if "website" in idx else None
+                    contact_email = (
+                        _clip(_first_token(row[idx["email"]]), 255) if "email" in idx else None
+                    )
                     mobile = _first_token(row[idx["primary_mobile"]]) if "primary_mobile" in idx else ""
                     mobile = "".join(c for c in mobile if c.isdigit())[-10:] if mobile else ""
+                    mobile = _clip(mobile, 15)
                     state_name = str(row[idx["state"]] or "").strip() if "state" in idx else ""
                     address = str(row[idx["address"]] or "").strip() if "address" in idx else ""
                     ctype_cell = str(row[idx["college_type"]] or "").strip()
@@ -170,7 +190,6 @@ class Command(BaseCommand):
                         if not state:
                             state = State.objects.create(name=alias, country=country)
 
-                    # Build fake row for ensure_college_user helpers
                     fake_row = {
                         "college_user": email,
                         "user_name": f"{name} Admin",
@@ -188,11 +207,9 @@ class Command(BaseCommand):
                             f"email already linked to other college '{linked.name}'"
                         )
                     if linked and not existing:
-                        # update that college instead of creating second
                         existing = linked
 
                     if College.objects.filter(rank=rank).exclude(name=name).exists():
-                        # find free rank
                         new_rank = rank
                         while College.objects.filter(rank=new_rank).exists():
                             new_rank += 1
@@ -200,7 +217,7 @@ class Command(BaseCommand):
 
                     defaults = dict(
                         college_user=user,
-                        affiliation=affiliation or None,
+                        affiliation=affiliation,
                         organization_type=org,
                         college_type=college_type,
                         rank=rank,
@@ -211,11 +228,11 @@ class Command(BaseCommand):
                         country=country,
                         state=state,
                         current_address=address,
-                        primary_mobile=mobile or None,
-                        email=contact_email or None,
-                        website=website or None,
-                        meta_title=meta_title[:200] if meta_title else name[:200],
-                        slug=slug or None,
+                        primary_mobile=mobile,
+                        email=contact_email,
+                        website=website,
+                        meta_title=meta_title or _clip(name, 200),
+                        slug=slug,
                     )
 
                     if existing:
@@ -250,19 +267,14 @@ class Command(BaseCommand):
                         obj.course_category.add(category)
                         created += 1
                         report.append((row_no, "CREATE", name))
-                except Exception as exc:
-                    errors += 1
-                    report.append((row_no, "ERROR", f"{row[idx['name']]}: {exc}"))
-                    self.stderr.write(self.style.ERROR(f"Row {row_no}: {exc}"))
 
-        if commit:
-            with transaction.atomic():
-                process_all()
-        else:
-            # dry-run still uses atomic + rollback so no lasting writes
-            with transaction.atomic():
-                process_all()
-                transaction.set_rollback(True)
+                    if not commit:
+                        # roll back only this row's savepoint — dry-run
+                        transaction.set_rollback(True)
+            except Exception as exc:
+                errors += 1
+                report.append((row_no, "ERROR", f"{row[idx['name']]}: {exc}"))
+                self.stderr.write(self.style.ERROR(f"Row {row_no}: {exc}"))
 
         self.stdout.write("")
         self.stdout.write(self.style.SUCCESS(
